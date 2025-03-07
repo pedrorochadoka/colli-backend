@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class ProdutoService {
@@ -44,8 +46,13 @@ public class ProdutoService {
         produto.setDataCadastro(LocalDateTime.now());
         em.persist(produto);
         em.flush();
-        Imagem imagem = imagemService.salvarImagemParaProduto(produto, imagemStream);
-        produto.setImagem(imagem);
+        try{
+            Imagem imagem = imagemService.salvarImagemParaProduto(produto, imagemStream);
+            produto.setImagem(imagem);
+        }catch(Exception e){
+            Logger.getLogger(ProdutoService.class.getName()).log(Level.SEVERE, "Erro salvar a imagem", e.getMessage());
+        }
+
         return produto;
     }
 

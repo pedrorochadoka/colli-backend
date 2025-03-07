@@ -58,7 +58,6 @@ public class ProdutoController {
             List<Produto> produtos = produtoService.obterTodosProdutos();
             return Response.ok(produtos).build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Erro ao listar todos os produtos").build();
         }
     }
@@ -76,10 +75,17 @@ public class ProdutoController {
     @DELETE
     @Path("/{produtoId}")
     public Response deletarProduto(@PathParam("produtoId") Long produtoId) {
-        boolean deletado = produtoService.deletarProduto(produtoId);
-        if (deletado) {
-            return Response.status(Response.Status.NO_CONTENT).entity("Produto removido com sucesso.").build();
+        try {
+            boolean deletado = produtoService.deletarProduto(produtoId);
+            if (deletado) {
+                return Response.status(Response.Status.OK).entity("Produto removido com sucesso.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Produto não encontrado.").build();
+            }
+        }catch(Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Erro ao excluir o produto.")
+                    .build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }
